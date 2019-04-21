@@ -7,8 +7,9 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'prettier',
-    'plugin:prettier/recommended'
-  ],
+    'plugin:vue/recommended',
+    'prettier/vue',
+    'plugin:prettier/recommended'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true

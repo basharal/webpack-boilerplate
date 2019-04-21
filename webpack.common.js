@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlPwaPlugin = require('pwa');
 const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -15,7 +16,10 @@ const process = require('process');
 const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-  entry: { main: './src/index.ts' },
+  entry: {
+    index: './src/index.ts',
+    main: './src/main.ts'
+  },
   plugins: [
     new CleanWebpackPlugin('dist', {}),
     new webpack.NamedChunksPlugin(),
@@ -51,6 +55,7 @@ module.exports = {
       }
     }),
     new WebpackMd5Hash(),
+    new VueLoaderPlugin(),
     new StyleLintPlugin({
       configFile: './stylelint.config.js',
       files: ['./src/**/*.s?(a|c)ss', './src/**/*.css']
@@ -61,7 +66,11 @@ module.exports = {
     filename: 'js/[name].[hash:8].js'
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    alias: {
+      '@': path.resolve(process.cwd(), 'src'),
+      vue$: 'vue/dist/vue.runtime.esm.js'
+    },
+    extensions: ['.tsx', '.ts', '.js', 'jsx', 'vue', 'json']
   },
   devtool: 'inline-source-map',
   devServer: {
@@ -108,16 +117,21 @@ module.exports = {
         use: [
           {
             loader: 'tslint-loader',
-            options: {
-              /* Loader options go here */
-            }
+            options: {}
           }
         ]
       },
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              appendTsSuffixTo: ['\\.vue$']
+            }
+          }
+        ]
       },
       {
         test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
