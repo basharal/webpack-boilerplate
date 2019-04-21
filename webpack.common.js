@@ -10,6 +10,7 @@ const HtmlPwaPlugin = require('pwa');
 const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
+const process = require('process');
 
 const devMode = process.env.NODE_ENV !== 'production';
 
@@ -27,13 +28,11 @@ module.exports = {
       algorithm: 'gzip',
       test: new RegExp('\\.(js|css|html|svg)$'),
       threshold: 10240,
-      minRatio: 0.8 
+      minRatio: 0.8
     }),
-    new HtmlPwaPlugin(
-      {
-        name: 'web'
-      }
-    ),
+    new HtmlPwaPlugin({
+      name: 'web'
+    }),
     new ManifestPlugin({
       fileName: 'manifest.json'
     }),
@@ -49,19 +48,16 @@ module.exports = {
         removeAttributeQuotes: !devMode,
         collapseBooleanAttributes: !devMode,
         removeScriptTypeAttributes: !devMode
-      }, 
+      }
     }),
     new WebpackMd5Hash(),
     new StyleLintPlugin({
       configFile: './stylelint.config.js',
-      files: [
-        './src/**/*.s?(a|c)ss',
-        './src/**/*.css'
-      ]
+      files: ['./src/**/*.s?(a|c)ss', './src/**/*.css']
     })
   ],
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(process.cwd(), 'dist'),
     filename: 'js/[name].[hash:8].js'
   },
   resolve: {
@@ -86,7 +82,7 @@ module.exports = {
           test: /\.(s*)css$/,
           chunks: 'all',
           enforce: true
-        },
+        }
       }
     }
   },
@@ -104,16 +100,18 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        use: 'vue-loader',
+        use: 'vue-loader'
       },
       {
         test: /\.ts$/,
         enforce: 'pre',
         use: [
-            {
-                loader: 'tslint-loader',
-                options: { /* Loader options go here */ }
+          {
+            loader: 'tslint-loader',
+            options: {
+              /* Loader options go here */
             }
+          }
         ]
       },
       {
@@ -171,17 +169,14 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: [
-          "jshint-loader",
-          "eslint-loader",
-        ],
+        use: ['jshint-loader', 'eslint-loader']
       },
       {
         test: /\.html$/,
         // Used to resolve img src in html to optimized versions.
         loader: 'html-loader',
         options: {
-          attrs: ["img:src"]
+          attrs: ['img:src']
         }
       }
     ]
