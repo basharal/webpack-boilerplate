@@ -123,9 +123,8 @@ module.exports = {
         test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
         use: [
           {
-            loader: 'url-loader',
+            loader: 'file-loader',
             options: {
-              limit: 4096,
               name: 'img/[name].[hash:8].[ext]'
             }
           }
