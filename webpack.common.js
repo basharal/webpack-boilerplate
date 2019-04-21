@@ -9,7 +9,6 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const HtmlPwaPlugin = require('pwa');
 const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
 const devMode = process.env.NODE_ENV !== 'production';
@@ -20,14 +19,14 @@ module.exports = {
     new CleanWebpackPlugin('dist', {}),
     new webpack.NamedChunksPlugin(),
     new MiniCssExtractPlugin({
-      filename: devMode ? '[name].css' : '[name].[hash:8].css',
-      chunkFilename: devMode ? '[id].css' : '[id].[hash:8].css'
+      filename: 'styles/[name].[hash:8].css',
+      chunkFilename: 'styles/[id].[hash:8].css'
     }),
     new CompressionWebpackPlugin({
       filename: '[path].gz[query]',
       algorithm: 'gzip',
       test: new RegExp('\\.(js|css|html|svg)$'),
-//      threshold: 10240,
+      threshold: 10240,
       minRatio: 0.8 
     }),
     new HtmlPwaPlugin(
@@ -38,19 +37,11 @@ module.exports = {
     new ManifestPlugin({
       fileName: 'manifest.json'
     }),
-    // Copy the images folder and optimize all the images
-    new CopyWebpackPlugin([
-      {
-        from: 'src/img',
-        to: 'img/[path][name].[hash:8].[ext]',
-        cache: true
-      }
-    ]),
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './src/index.html',
-      inject: false,
+      inject: true,
       hash: false,
       minify: {
         removeComments: !devMode,
@@ -95,30 +86,17 @@ module.exports = {
           test: /\.(s*)css$/,
           chunks: 'all',
           enforce: true
-        }
+        },
       }
     }
   },
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [
-          // Adds CSS to the DOM by injecting a `<style>` tag
-          'style-loader',
-          MiniCssExtractPlugin.loader,
-          // Interprets `@import` and `url()` like `import/require()` and will resolve them
-          'css-loader',
-          'postcss-loader'
-        ]
-      },
-      {
-        test: /\.scss$/,
+        test: /\.s?css$/,
         use: [
           'style-loader',
-          // Adds CSS to the DOM by injecting a `<style>` tag
           MiniCssExtractPlugin.loader,
-          // Interprets `@import` and `url()` like `import/require()` and will resolve them
           'css-loader',
           'postcss-loader',
           'sass-loader'
@@ -197,6 +175,14 @@ module.exports = {
           "jshint-loader",
           "eslint-loader",
         ],
+      },
+      {
+        test: /\.html$/,
+        // Used to resolve img src in html to optimized versions.
+        loader: 'html-loader',
+        options: {
+          attrs: ["img:src"]
+        }
       }
     ]
   }
