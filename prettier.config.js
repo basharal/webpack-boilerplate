@@ -1,8 +1,9 @@
 module.exports = {
-  printWidth: 80,
+  printWidth: 100,
   tabWidth: 2,
   semi: true,
   bracketSpacing: true,
+  singleQuote: false,
   overrides: [
     {
       files: '*.js',
