@@ -6,6 +6,7 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const HtmlPwaPlugin = require('pwa');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(common, {
   mode: 'production',
@@ -29,13 +30,14 @@ module.exports = merge(common, {
     new ManifestPlugin({
       fileName: 'manifest.json'
     }),
+    // new BundleAnalyzerPlugin(),
     new ImageminPlugin({ test: /\.(jpe?g|png|gif|webp|svg)$/i })
   ],
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
         test: /\.js(\?.*)?$/i,
-        warningsFilter: function() {
+        warningsFilter: function () {
           return true;
         },
         extractComments: false,

@@ -162,7 +162,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /api\/.*js/],
         use: ['jshint-loader', 'eslint-loader']
       },
       {
