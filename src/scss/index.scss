@@ -1,0 +1,12 @@
+div {
+  color: blue;
+}
+
+#signup {
+  background-image: url("../img/mockup.svg");
+}
+
+@import "fontello";
+@import "variables";
+@import "custom";
+@import "~bootstrap/scss/bootstrap";

@@ -5,15 +5,12 @@ const WebpackMd5Hash = require('webpack-md5-hash');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const HtmlPwaPlugin = require('pwa');
-const webpack = require('webpack');
-const ManifestPlugin = require('webpack-manifest-plugin');
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
-const process = require('process');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+//   .BundleAnalyzerPlugin;
 
-const devMode = process.env.NODE_ENV !== 'production';
+const webpack = require('webpack');
+const process = require('process');
 
 module.exports = {
   entry: {
@@ -24,42 +21,26 @@ module.exports = {
     new CleanWebpackPlugin('dist', {}),
     new webpack.NamedChunksPlugin(),
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].[hash:8].css',
-      chunkFilename: 'styles/[id].[hash:8].css'
+      filename: '[name].[hash:8].css',
+      chunkFilename: '[id].[hash:8].css'
     }),
-    new CompressionWebpackPlugin({
-      filename: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: new RegExp('\\.(js|css|html|svg)$'),
-      threshold: 10240,
-      minRatio: 0.8
-    }),
-    new HtmlPwaPlugin({
-      name: 'web'
-    }),
-    new ManifestPlugin({
-      fileName: 'manifest.json'
-    }),
-    new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './src/index.html',
-      inject: true,
       hash: false,
-      minify: {
-        removeComments: !devMode,
-        collapseWhitespace: !devMode,
-        removeAttributeQuotes: !devMode,
-        collapseBooleanAttributes: !devMode,
-        removeScriptTypeAttributes: !devMode
-      }
+      chunks: ['index', 'styles', 'vendors']
     }),
     new WebpackMd5Hash(),
     new VueLoaderPlugin(),
     new StyleLintPlugin({
+      configFile: './stylelint.config.css.js',
+      files: ['./src/**/*.css']
+    }),
+    new StyleLintPlugin({
       configFile: './stylelint.config.js',
-      files: ['./src/**/*.s?(a|c)ss', './src/**/*.css']
+      files: ['./src/**/*.s?(a|c)ss']
     })
+    // new BundleAnalyzerPlugin()
   ],
   output: {
     path: path.resolve(process.cwd(), 'dist'),
@@ -81,7 +62,7 @@ module.exports = {
   optimization: {
     splitChunks: {
       cacheGroups: {
-        commons: {
+        vendors: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           chunks: 'all'
@@ -181,7 +162,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /api\/.*js/],
         use: ['jshint-loader', 'eslint-loader']
       },
       {

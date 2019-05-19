@@ -1,0 +1,9 @@
+<html>
+  <head> </head>
+
+  <body>
+    <img src="img/image.png" />
+    <h1>Hello world</h1>
+    <div id="app"></div>
+  </body>
+</html>

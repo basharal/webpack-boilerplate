@@ -2,6 +2,11 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
+const HtmlPwaPlugin = require('pwa');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(common, {
   mode: 'production',
@@ -11,11 +16,28 @@ module.exports = merge(common, {
       vue$: 'vue/dist/vue.runtime.esm.js'
     }
   },
+  plugins: [
+    new CompressionWebpackPlugin({
+      filename: '[path].gz[query]',
+      algorithm: 'gzip',
+      test: new RegExp('\\.(js|css|html|svg)$'),
+      threshold: 10240,
+      minRatio: 0.8
+    }),
+    new HtmlPwaPlugin({
+      name: 'web'
+    }),
+    new ManifestPlugin({
+      fileName: 'manifest.json'
+    }),
+    // new BundleAnalyzerPlugin(),
+    new ImageminPlugin({ test: /\.(jpe?g|png|gif|webp|svg)$/i })
+  ],
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
         test: /\.js(\?.*)?$/i,
-        warningsFilter: function() {
+        warningsFilter: function () {
           return true;
         },
         extractComments: false,
