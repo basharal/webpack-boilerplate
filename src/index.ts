@@ -1,5 +1,9 @@
 import "./landing";
 import * as hello from "./api/hello";
 
-let h = hello.snippets.HelloRequest.create({ name: "foo" });
-console.log(h.toJSON());
+fetch("http://localhost:8082/v1/greeter").then(res => {
+  res.json().then(body => {
+    let h = hello.snippets.HelloReply.create(body);
+    console.log(h.toJSON());
+  });
+});
